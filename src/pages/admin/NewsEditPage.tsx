@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Switch, Button, Card, message, Upload, Modal } from 'antd';
+import { Form, Input, Select, Switch, Button, Card, message, Upload } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import ReactQuill from 'react-quill';
 import { supabase } from '../../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
-import 'react-quill/dist/quill.snow.css';
+import dayjs from 'dayjs';
+import TextEditor from '../../components/TextEditor';
+import CategorySelector from '../../components/CategorySelector';
 
 const { Option } = Select;
-const { Dragger } = Upload;
-
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'indent': '-1'}, { 'indent': '+1' }],
-    [{ 'direction': 'rtl' }],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    ['link', 'image'],
-    ['clean']
-  ],
-};
 
 const NewsEditPage = () => {
   const navigate = useNavigate();
@@ -32,9 +18,7 @@ const NewsEditPage = () => {
   const [content, setContent] = useState('');
   const [fileList, setFileList] = useState([]);
   const [imageList, setImageList] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -77,15 +61,7 @@ const NewsEditPage = () => {
     }
   };
 
-  const handleCancel = () => setPreviewOpen(false);
-
-  const handlePreview = async (file) => {
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-  };
-
-  const uploadFile = async (file, type) => {
+  const uploadFile = async (file: File, type: 'images' | 'attachments') => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
@@ -233,11 +209,11 @@ const NewsEditPage = () => {
             label="分类"
             rules={[{ required: true, message: '请选择分类' }]}
           >
-            <Select>
-              <Option value="学院新闻">学院新闻</Option>
-              <Option value="通知公告">通知公告</Option>
-              <Option value="学术活动">学术活动</Option>
-            </Select>
+            <CategorySelector 
+              style={{ width: '100%' }}
+              moduleName="news"
+              valueType="display_name"
+            />
           </Form.Item>
 
           <Form.Item
@@ -245,12 +221,9 @@ const NewsEditPage = () => {
             required
             rules={[{ required: true, message: '请输入内容' }]}
           >
-            <ReactQuill 
-              theme="snow"
+            <TextEditor 
               value={content}
               onChange={setContent}
-              modules={modules}
-              style={{ height: '400px', marginBottom: '50px' }}
             />
           </Form.Item>
 
@@ -259,7 +232,6 @@ const NewsEditPage = () => {
               {...uploadProps}
               listType="picture-card"
               fileList={imageList}
-              onPreview={handlePreview}
               onChange={handleImageChange}
               accept="image/*"
             >
@@ -273,7 +245,7 @@ const NewsEditPage = () => {
           </Form.Item>
 
           <Form.Item label="附件">
-            <Dragger
+            <Upload.Dragger
               {...uploadProps}
               fileList={fileList}
               onChange={handleFileChange}
@@ -283,7 +255,7 @@ const NewsEditPage = () => {
               </p>
               <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
               <p className="ant-upload-hint">支持单次或批量上传</p>
-            </Dragger>
+            </Upload.Dragger>
           </Form.Item>
 
           <Form.Item
@@ -306,15 +278,6 @@ const NewsEditPage = () => {
           </Form.Item>
         </Form>
       </Card>
-
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={handleCancel}
-      >
-        <img alt="preview" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
     </div>
   );
 };

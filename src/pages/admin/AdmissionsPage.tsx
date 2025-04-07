@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, message, Popconfirm, Modal, Form, Input, Upload, Switch, InputNumber, Select } from 'antd';
+import { Table, Button, Space, Tag, message, Modal, Form, Input, Upload, Switch, InputNumber, Select } from 'antd';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import TextEditor from '../../components/TextEditor';
 
 const { Option } = Select;
 
@@ -32,22 +30,7 @@ interface AdmissionItem {
   is_top: boolean;
 }
 
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'indent': '-1'}, { 'indent': '+1' }],
-    [{ 'direction': 'rtl' }],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    ['link', 'image'],
-    ['clean']
-  ],
-};
-
 const AdmissionsPage = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<AdmissionItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,6 +51,7 @@ const AdmissionsPage = () => {
       const { data: admissions, error } = await supabase
         .from('admissions')
         .select('*')
+        .order('is_top', { ascending: false })
         .order('display_order', { ascending: true });
 
       if (error) throw error;
@@ -123,16 +107,17 @@ const AdmissionsPage = () => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
+      const bucketName = type === 'images' ? 'admissions-images' : 'admissions-attachments';
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from(`admissions-${type}`)
+        .from(bucketName)
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from(`admissions-${type}`)
+        .from(bucketName)
         .getPublicUrl(filePath);
 
       return {
@@ -140,10 +125,18 @@ const AdmissionsPage = () => {
         name: file.name,
         type: file.type
       };
-    } catch (error) {
+    } catch (error: any) {
       message.error(`文件上传失败: ${error.message}`);
       return null;
     }
+  };
+
+  const handleImageChange = ({ fileList: newFileList }) => {
+    setImageList(newFileList);
+  };
+
+  const handleFileChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
   };
 
   const handleModalOk = async () => {
@@ -225,12 +218,10 @@ const AdmissionsPage = () => {
     }
   };
 
-  const handleImageChange = ({ fileList: newFileList }) => {
-    setImageList(newFileList);
-  };
-
-  const handleFileChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+  const uploadProps = {
+    beforeUpload: () => false,
+    multiple: true,
+    maxCount: 10
   };
 
   const columns = [
@@ -285,14 +276,7 @@ const AdmissionsPage = () => {
       render: (_: any, record: AdmissionItem) => (
         <Space size="middle">
           <a onClick={() => handleEdit(record)}>编辑</a>
-          <Popconfirm
-            title="确定要删除这条招生信息吗？"
-            onConfirm={() => handleDelete(record.id)}
-            okText="确定"
-            cancelText="取消"
-          >
-            <a>删除</a>
-          </Popconfirm>
+          <a onClick={() => handleDelete(record.id)}>删除</a>
         </Space>
       ),
     },
@@ -337,7 +321,7 @@ const AdmissionsPage = () => {
           setFileList([]);
           setEditingItem(null);
         }}
-        width={800}
+        width={1200}
       >
         <Form
           form={form}
@@ -363,7 +347,7 @@ const AdmissionsPage = () => {
             label="分类"
             rules={[{ required: true, message: '请选择分类' }]}
           >
-            <Select style={{ width: '100%' }}>
+            <Select>
               <Option value="本科生招生">本科生招生</Option>
               <Option value="研究生招生">研究生招生</Option>
               <Option value="国际学生招生">国际学生招生</Option>
@@ -373,28 +357,24 @@ const AdmissionsPage = () => {
 
           <Form.Item
             label="内容"
-            required
+            name="content"
             rules={[{ required: true, message: '请输入内容' }]}
           >
-            <ReactQuill 
-              theme="snow"
+            <TextEditor 
               value={content}
               onChange={setContent}
-              modules={modules}
-              style={{ height: '200px', marginBottom: '40px' }}
             />
           </Form.Item>
 
           <Form.Item label="图片">
             <Upload
+              {...uploadProps}
               listType="picture-card"
               fileList={imageList}
               onChange={handleImageChange}
-              beforeUpload={() => false}
-              multiple
-              maxCount={5}
+              accept="image/*"
             >
-              {imageList.length >= 5 ? null : (
+              {imageList.length >= 10 ? null : (
                 <div>
                   <PlusOutlined />
                   <div style={{ marginTop: 8 }}>上传图片</div>
@@ -405,11 +385,9 @@ const AdmissionsPage = () => {
 
           <Form.Item label="附件">
             <Upload.Dragger
+              {...uploadProps}
               fileList={fileList}
               onChange={handleFileChange}
-              beforeUpload={() => false}
-              multiple
-              maxCount={10}
             >
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />

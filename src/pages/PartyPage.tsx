@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AboutSidebar from '../components/AboutSidebar';
+import PartySidebar from '../components/PartySidebar';
 import { supabase } from '../lib/supabase';
 
 interface MenuItem {
@@ -14,16 +14,16 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-interface AboutContent {
+interface PartyContent {
   id: string;
   title: string;
   content: string;
   category: string;
 }
 
-const AboutPage = () => {
+const PartyPage = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [content, setContent] = useState<AboutContent | null>(null);
+  const [content, setContent] = useState<PartyContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
@@ -33,10 +33,10 @@ const AboutPage = () => {
     fetchNavItems();
     fetchContent();
     
-    // 如果直接访问/about路径，重定向到/about/school
-    if (location.pathname === '/about') {
-      console.log('重定向到学校概况页面');
-      navigate('/about/school');
+    // 如果直接访问/party路径，重定向到/party/news
+    if (location.pathname === '/party') {
+      console.log('重定向到党建动态页面');
+      navigate('/party/news');
       return;
     }
     
@@ -54,74 +54,62 @@ const AboutPage = () => {
 
       if (error) throw error;
 
-      // Find the "研究院介绍" section
-      const aboutSection = allItems?.find(item => item.title === '研究院介绍');
+      // Find the "党建工作" section
+      const partySection = allItems?.find(item => item.title === '党建工作');
       
-      if (aboutSection) {
-        // Get all submenu items for the about section
-        const aboutItems = allItems
-          .filter(item => item.parent_id === aboutSection.id)
+      if (partySection) {
+        // Get all submenu items for the party section
+        const partyItems = allItems
+          .filter(item => item.parent_id === partySection.id)
           .map(item => ({
             ...item,
             children: allItems.filter(child => child.parent_id === item.id)
           }));
         
-        // 如果数据库中没有学校概况，手动添加一个
-        if (!aboutItems.some(item => item.title === '学校概况')) {
-          console.log('数据库中未找到学校概况菜单项，使用硬编码的菜单项');
-          
-          // 使用Navigation.tsx中定义的菜单项
-          const hardcodedItems = [
-            { 
-              id: 'school-item',
-              title: '学校概况',
-              link: '/about/school',
-              parent_id: aboutSection.id,
-              has_submenu: false,
-              display_order: 0
-            },
-            ...aboutItems
-          ];
-          
-          setMenuItems(hardcodedItems);
-        } else {
-          setMenuItems(aboutItems);
-        }
+        setMenuItems(partyItems);
       } else {
-        // 如果找不到研究院介绍部分，使用硬编码的菜单项
-        console.warn('未找到研究院介绍部分，使用硬编码的菜单项');
+        // 如果找不到党建工作部分，使用硬编码的菜单项
+        console.warn('未找到党建工作部分，使用硬编码的菜单项');
         const hardcodedItems = [
           { 
-            id: 'school-item',
-            title: '学校概况',
-            link: '/about/school',
+            id: 'party-news-item',
+            title: '党建动态',
+            link: '/party/news',
             parent_id: null,
             has_submenu: false,
             display_order: 0
           },
           { 
-            id: 'overview-item',
-            title: '研究院概况',
-            link: '/about/overview',
+            id: 'party-study-item',
+            title: '理论学习',
+            link: '/party/study',
             parent_id: null,
             has_submenu: false,
             display_order: 1
           },
           { 
-            id: 'organization-item',
-            title: '机构设置',
-            link: '/about/organization',
+            id: 'party-organization-item',
+            title: '组织建设',
+            link: '/party/organization',
             parent_id: null,
             has_submenu: false,
             display_order: 2
           },
           { 
-            id: 'history-item',
-            title: '发展历程',
-            link: '/about/history',
+            id: 'party-education-item',
+            title: '党史教育',
+            link: '/party/education',
             parent_id: null,
             has_submenu: false,
             display_order: 3
+          },
+          { 
+            id: 'party-discipline-item',
+            title: '廉政建设',
+            link: '/party/discipline',
+            parent_id: null,
+            has_submenu: false,
+            display_order: 4
           }
         ];
         setMenuItems(hardcodedItems);
@@ -133,36 +121,44 @@ const AboutPage = () => {
       // 出错时使用硬编码的菜单项
       const hardcodedItems = [
         { 
-          id: 'school-item',
-          title: '学校概况',
-          link: '/about/school',
+          id: 'party-news-item',
+          title: '党建动态',
+          link: '/party/news',
           parent_id: null,
           has_submenu: false,
           display_order: 0
         },
         { 
-          id: 'overview-item',
-          title: '研究院概况',
-          link: '/about/overview',
+          id: 'party-study-item',
+          title: '理论学习',
+          link: '/party/study',
           parent_id: null,
           has_submenu: false,
           display_order: 1
         },
         { 
-          id: 'organization-item',
-          title: '机构设置',
-          link: '/about/organization',
+          id: 'party-organization-item',
+          title: '组织建设',
+          link: '/party/organization',
           parent_id: null,
           has_submenu: false,
           display_order: 2
         },
         { 
-          id: 'history-item',
-          title: '发展历程',
-          link: '/about/history',
+          id: 'party-education-item',
+          title: '党史教育',
+          link: '/party/education',
           parent_id: null,
           has_submenu: false,
           display_order: 3
+        },
+        { 
+          id: 'party-discipline-item',
+          title: '廉政建设',
+          link: '/party/discipline',
+          parent_id: null,
+          has_submenu: false,
+          display_order: 4
         }
       ];
       setMenuItems(hardcodedItems);
@@ -180,11 +176,11 @@ const AboutPage = () => {
 
       // Map paths to categories
       const pathToCategory: { [key: string]: string } = {
-        'school': '学校概况',
-        'overview': '研究院概况', 
-        'organization': '机构设置',
-        'history': '发展历程',
-        'faculty': '师资队伍'
+        'news': '党建动态',
+        'study': '理论学习', 
+        'organization': '组织建设',
+        'education': '党史教育',
+        'discipline': '廉政建设'
       };
 
       const category = pathToCategory[currentPath];
@@ -195,7 +191,7 @@ const AboutPage = () => {
       console.log(`正在加载分类: ${category}的内容，路径: ${currentPath}`);
       
       const { data, error } = await supabase
-        .from('about_content')
+        .from('party_content')
         .select('*')
         .eq('category', category)
         .eq('published', true)
@@ -204,14 +200,14 @@ const AboutPage = () => {
       if (error) {
         console.error('获取内容错误:', error);
         
-        // 特殊处理学校概况，如果找不到内容，使用默认内容
-        if (category === '学校概况') {
-          console.log('找不到学校概况内容，使用默认内容');
+        // 特殊处理党建动态，如果找不到内容，使用默认内容
+        if (category === '党建动态') {
+          console.log('找不到党建动态内容，使用默认内容');
           setContent({
-            id: 'default-school',
-            title: '学校概况',
-            content: '<h2>吉林大学学校概况</h2><p>吉林大学是教育部直属的全国重点综合性大学，坐落在吉林省长春市，是国家"211工程"和"985工程"重点建设的高水平研究型大学。</p><p>学校拥有高水平的师资队伍和优质的教学资源，致力于培养具有国际视野和创新能力的高素质人才。</p>',
-            category: '学校概况'
+            id: 'default-party-news',
+            title: '党建动态',
+            content: '<h2>中国科协创新战略研究院党建动态</h2><p>中国科协创新战略研究院党委坚持以习近平新时代中国特色社会主义思想为指导，全面贯彻党的二十大精神，认真落实新时代党的建设总要求，把政治建设摆在首位，深入推进全面从严治党，持续提升组织力和战斗力。</p><p>研究院党委定期组织开展党员干部学习教育、党性锻炼、组织生活等活动，推动学习贯彻习近平新时代中国特色社会主义思想走深走实。</p>',
+            category: '党建动态'
           });
           return;
         }
@@ -238,8 +234,8 @@ const AboutPage = () => {
 
     for (const path of paths) {
       currentPath += `/${path}`;
-      if (path === 'about') {
-        breadcrumbs.push({ title: '研究院介绍', path: currentPath });
+      if (path === 'party') {
+        breadcrumbs.push({ title: '党建工作', path: currentPath });
       } else {
         const menuItem = menuItems.find(item => item.link === currentPath);
         if (menuItem) {
@@ -279,32 +275,32 @@ const AboutPage = () => {
       {/* Banner Image */}
       <div className="w-full h-[300px] relative mt-[132px] mb-8">
         <img 
-          src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=2000&q=80"
-          alt="Campus Banner"
+          src="https://img.freepik.com/free-photo/red-flag-with-stars-hammer-sickle-symbolizing-communist-party_587448-4661.jpg?w=2000&t=st=1715073147~exp=1715073747~hmac=5aac96e31c4da49b98f03ecefd44babaae61e0bff32c1b3e4ded9edf3d1a71d1"
+          alt="党建工作 Banner"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl font-bold text-white">研究院介绍</h1>
+          <h1 className="text-4xl font-bold text-white">党建工作</h1>
         </div>
       </div>
 
       <div className="container mx-auto px-4 pb-24">
         <div className="grid grid-cols-4 gap-8">
           <div className="col-span-1">
-            <AboutSidebar 
+            <PartySidebar 
               menuItems={menuItems} 
               currentPath={location.pathname}
             />
           </div>
           <div className="col-span-3">
-            {/* Breadcrumbs 移到右侧内容上方，增大字体 */}
+            {/* Breadcrumbs */}
             <nav className="mb-6 flex items-center space-x-2 text-base font-medium text-gray-700">
               {getBreadcrumbs().map((crumb, index, array) => (
                 <React.Fragment key={crumb.path}>
                   <Link 
                     to={crumb.path}
-                    className="hover:text-[#014c85] transition-colors"
+                    className="hover:text-red-600 transition-colors"
                   >
                     {crumb.title}
                   </Link>
@@ -322,11 +318,11 @@ const AboutPage = () => {
                 </div>
               ) : content ? (
                 <>
-                  <h1 className="text-3xl font-bold text-[#014c85] mb-6">
+                  <h1 className="text-3xl font-bold text-red-600 mb-6">
                     {content.title}
                   </h1>
                   <div 
-                    className="prose prose-lg max-w-none prose-headings:text-[#014c85] prose-a:text-[#014c85]"
+                    className="prose prose-lg max-w-none prose-headings:text-red-600 prose-a:text-red-600"
                     dangerouslySetInnerHTML={{ __html: content.content }}
                   />
                 </>
@@ -344,4 +340,4 @@ const AboutPage = () => {
   );
 };
 
-export default AboutPage;
+export default PartyPage; 

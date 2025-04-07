@@ -11,6 +11,7 @@ interface CarouselItem {
   subtitle: string | null;
   image: string;
   active: boolean;
+  show_title: boolean;
   display_order: number;
   created_at: string;
   updated_at: string;
@@ -68,6 +69,7 @@ const CarouselPage = () => {
       title: record.title,
       subtitle: record.subtitle,
       active: record.active,
+      show_title: record.show_title,
       display_order: record.display_order
     });
     setModalVisible(true);
@@ -167,6 +169,16 @@ const CarouselPage = () => {
       ),
     },
     {
+      title: '显示标题',
+      dataIndex: 'show_title',
+      key: 'show_title',
+      render: (show_title: boolean) => (
+        <Tag color={show_title ? 'blue' : 'default'}>
+          {show_title ? '显示' : '隐藏'}
+        </Tag>
+      ),
+    },
+    {
       title: '显示顺序',
       dataIndex: 'display_order',
       key: 'display_order',
@@ -239,6 +251,7 @@ const CarouselPage = () => {
           layout="vertical"
           initialValues={{
             active: true,
+            show_title: true,
             display_order: 0
           }}
         >
@@ -298,6 +311,14 @@ const CarouselPage = () => {
             valuePropName="checked"
           >
             <Switch checkedChildren="启用" unCheckedChildren="禁用" />
+          </Form.Item>
+
+          <Form.Item
+            name="show_title"
+            label="显示标题"
+            valuePropName="checked"
+          >
+            <Switch checkedChildren="显示" unCheckedChildren="隐藏" />
           </Form.Item>
         </Form>
       </Modal>

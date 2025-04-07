@@ -41,10 +41,10 @@ function Carousel() {
 
       if (error) throw error;
       
-      // Convert show_title to strict boolean and provide default value
+      // Ensure show_title is properly typed as boolean
       const processedData = (data || []).map(slide => ({
         ...slide,
-        show_title: slide.show_title !== false // Treat null/undefined as true
+        show_title: Boolean(slide.show_title)
       }));
       
       setSlides(processedData);

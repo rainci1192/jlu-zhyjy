@@ -13,6 +13,8 @@ const navItems = [
     link: '/about',
     icon: <Building2 className="w-5 h-5" />,
     subItems: [
+      { title: '学校概况', link: '/about/school' },
+      { title: '研究院概况', link: '/about/overview' },
       { title: '机构设置', link: '/about/organization' },
       { title: '师资队伍', link: '/about/faculty' },
       { title: '发展历程', link: '/about/history' }

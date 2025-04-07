@@ -4,10 +4,50 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>吉林大学珠海研究院</title>
+    <!-- Froala Editor 样式修复 -->
+    <link rel="stylesheet" href="/froala-fix.css" />
+    <!-- Froala Editor 额外样式 -->
+    <style>
+      .fr-box {
+        position: relative !important;
+        z-index: 10000 !important;
+      }
+      .fr-toolbar {
+        z-index: 10001 !important;
+        visibility: visible !important;
+        display: block !important;
+        opacity: 1 !important;
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+      }
+      .fr-wrapper {
+        z-index: 9999 !important;
+      }
+      .fr-popup {
+        z-index: 10002 !important;
+      }
+      .fr-second-toolbar {
+        z-index: 10000 !important;
+      }
+      .fr-element {
+        min-height: 500px !important;
+      }
+      .fr-toolbar .fr-command.fr-btn,
+      .fr-popup .fr-command.fr-btn {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Froala Editor 工具栏修复脚本 -->
+    <script src="/froala-toolbar-fix.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

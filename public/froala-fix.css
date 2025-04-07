@@ -1,0 +1,76 @@
+/* Froala 编辑器工具栏修复样式 */
+.fr-box {
+  position: relative !important;
+  z-index: 10000 !important;
+}
+
+.fr-toolbar {
+  z-index: 10001 !important;
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+.fr-wrapper {
+  z-index: 9999 !important;
+}
+
+.fr-popup {
+  z-index: 10002 !important;
+}
+
+.fr-second-toolbar {
+  z-index: 10000 !important;
+}
+
+.fr-element {
+  min-height: 500px !important;
+}
+
+.ant-modal-body {
+  overflow: visible !important;
+}
+
+.ant-modal-content {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.ant-modal {
+  max-height: 90vh !important;
+  overflow: visible !important;
+}
+
+/* 确保按钮可见 */
+.fr-toolbar .fr-command.fr-btn,
+.fr-popup .fr-command.fr-btn {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 确保弹出菜单可见 */
+.fr-popup {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 修复工具栏按钮组 */
+.fr-btn-grp {
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+/* 修复更多工具按钮 */
+.fr-more-toolbar {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10003 !important;
+} 

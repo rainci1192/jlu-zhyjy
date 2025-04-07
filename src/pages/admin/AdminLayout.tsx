@@ -11,6 +11,13 @@ import {
   SettingOutlined,
   TeamOutlined,
   LogoutOutlined,
+  TagsOutlined,
+  MenuOutlined,
+  AppstoreOutlined,
+  ExperimentOutlined,
+  CameraOutlined,
+  BookOutlined,
+  FlagOutlined,
 } from '@ant-design/icons';
 import { Link, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -18,6 +25,14 @@ import DashboardPage from './DashboardPage';
 import NewsManagePage from './NewsManagePage';
 import NewsEditPage from './NewsEditPage';
 import NotificationsPage from './NotificationsPage';
+import CategoryManagePage from './CategoryManagePage';
+import NavigationSettingsPage from './NavigationSettingsPage';
+import CategoryExample from '../CategoryExample';
+import ResearchPlatformsPage from './ResearchPlatformsPage';
+import LogoSettingsPage from './LogoSettingsPage';
+import CampusSceneryPage from './CampusSceneryPage';
+import AboutContentPage from './AboutContentPage';
+import PartyContentPage from './PartyContentPage';
 
 const { Header, Sider, Content } = Layout;
 
@@ -57,9 +72,39 @@ const AdminLayout = () => {
       label: <Link to="/admin/admissions">招生信息</Link>
     },
     {
+      key: 'about',
+      icon: <BookOutlined />,
+      label: <Link to="/admin/about">研究院介绍</Link>
+    },
+    {
+      key: 'party',
+      icon: <FlagOutlined />,
+      label: <Link to="/admin/party">党建工作</Link>
+    },
+    {
+      key: 'categories',
+      icon: <TagsOutlined />,
+      label: <Link to="/admin/categories">分类管理</Link>
+    },
+    {
       key: 'carousel',
       icon: <PictureOutlined />,
       label: <Link to="/admin/carousel">轮播图管理</Link>
+    },
+    {
+      key: 'research-platforms',
+      icon: <ExperimentOutlined />,
+      label: <Link to="/admin/research-platforms">科研平台</Link>
+    },
+    {
+      key: 'campus-scenery',
+      icon: <CameraOutlined />,
+      label: <Link to="/admin/campus-scenery">校园风光</Link>
+    },
+    {
+      key: 'logo',
+      icon: <PictureOutlined />,
+      label: <Link to="/admin/logo">Logo设置</Link>
     },
     {
       key: 'users',
@@ -70,6 +115,16 @@ const AdminLayout = () => {
       key: 'settings',
       icon: <SettingOutlined />,
       label: <Link to="/admin/settings">系统设置</Link>
+    },
+    {
+      key: 'navigation',
+      icon: <MenuOutlined />,
+      label: <Link to="/admin/navigation">导航管理</Link>
+    },
+    {
+      key: 'category-example',
+      icon: <AppstoreOutlined />,
+      label: <Link to="/admin/category-example">分类选择器示例</Link>
     }
   ];
 
@@ -125,6 +180,14 @@ const AdminLayout = () => {
             <Route path="/news/create" element={<NewsEditPage />} />
             <Route path="/news/edit/:id" element={<NewsEditPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/categories" element={<CategoryManagePage />} />
+            <Route path="/navigation" element={<NavigationSettingsPage />} />
+            <Route path="/category-example" element={<CategoryExample />} />
+            <Route path="/research-platforms" element={<ResearchPlatformsPage />} />
+            <Route path="/campus-scenery" element={<CampusSceneryPage />} />
+            <Route path="/logo" element={<LogoSettingsPage />} />
+            <Route path="/about" element={<AboutContentPage />} />
+            <Route path="/party" element={<PartyContentPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Routes>
         </Content>
